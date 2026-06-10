@@ -1,15 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\Admin\CommentController as AdminCommentController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\FaqController as AdminFaqController;
-use App\Http\Controllers\Admin\MessageController as AdminMessageController;
-use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
-use App\Http\Controllers\Admin\SettingController as AdminSettingController;
-use App\Http\Controllers\Admin\SocialController as AdminSocialController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CategoryController;
 use App\Http\Controllers\Shop\HomeController;
@@ -39,33 +29,6 @@ Route::get('/shipping', [PageController::class, 'shipping'])->name('pages.shippi
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('pages.wishlist');
 Route::get('/compare', [PageController::class, 'compare'])->name('pages.compare');
 Route::get('/checkout', [PageController::class, 'checkout'])->name('pages.checkout');
-
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
-    Route::get('/categories/create', [AdminCategoryController::class, 'create'])->name('categories.create');
-    Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
-    Route::get('/categories/{id}/edit', [AdminCategoryController::class, 'edit'])->name('categories.edit');
-    Route::put('/categories/{id}', [AdminCategoryController::class, 'update'])->name('categories.update');
-    Route::delete('/categories/{id}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
-
-    Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
-    Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
-    Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
-    Route::get('/products/{id}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
-    Route::put('/products/{id}', [AdminProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{id}', [AdminProductController::class, 'destroy'])->name('products.destroy');
-
-    Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
-
-    Route::get('/comments', [AdminCommentController::class, 'index'])->name('comments.index');
-    Route::get('/faqs', [AdminFaqController::class, 'index'])->name('faqs.index');
-    Route::get('/messages', [AdminMessageController::class, 'index'])->name('messages.index');
-    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-    Route::get('/socials', [AdminSocialController::class, 'index'])->name('socials.index');
-    Route::get('/settings', [AdminSettingController::class, 'index'])->name('settings.index');
-});
 
 Route::middleware([
     'auth:sanctum',

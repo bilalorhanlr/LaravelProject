@@ -43,12 +43,18 @@
                 </ul>
             </li>
 
-            {{-- Categories --}}
-            <li>
-                <a href="{{ route('admin.categories.index') }}" class="{{ $linkClass(request()->routeIs('admin.categories.*')) }}">
+            {{-- Categories (dropdown) --}}
+            <li x-data="{ open: {{ request()->routeIs('admin.categories.*') ? 'true' : 'false' }} }">
+                <button type="button" @click="open = !open" class="{{ $linkClass(request()->routeIs('admin.categories.*')) }} w-full">
                     <ion-icon name="grid" class="text-xl text-yellow-400"></ion-icon>
-                    <span x-show="sidebarOpen" x-cloak>Categories</span>
-                </a>
+                    <span x-show="sidebarOpen" x-cloak class="flex-1 text-left">Categories</span>
+                    <ion-icon x-show="sidebarOpen" x-cloak name="chevron-down-outline" class="text-sm transition" :class="open && 'rotate-180'"></ion-icon>
+                </button>
+                <ul x-show="open && sidebarOpen" x-cloak class="ml-9 mt-1 space-y-1 border-l border-white/10 pl-3">
+                    <li><a href="{{ route('admin.categories.index') }}" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">Category List</a></li>
+                    <li><a href="{{ route('admin.categories.tree') }}" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">Category Tree</a></li>
+                    <li><a href="{{ route('admin.categories.create') }}" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">Add Category</a></li>
+                </ul>
             </li>
 
             {{-- Products --}}

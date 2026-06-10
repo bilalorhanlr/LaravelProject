@@ -1,67 +1,74 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Products')
+@section('title', 'Product List')
 
 @section('content')
-@include('admin.partials.page-header', ['title' => 'Products', 'breadcrumb' => 'List'])
+@include('admin.partials.page-header', ['title' => 'Product List', 'breadcrumb' => 'Home / Product List'])
+
+<div class="mb-4">
+    <a href="{{ route('admin.products.create') }}" class="inline-flex items-center gap-2 rounded bg-admin-primary px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600">
+        <ion-icon name="add-outline"></ion-icon> Add Product
+    </a>
+</div>
 
 <div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-    <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-        <h3 class="text-base font-semibold text-slate-800">Product List</h3>
-        <a href="{{ route('admin.products.create') }}" class="rounded bg-admin-primary px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600">+ Add Product</a>
-    </div>
-
-    <div class="overflow-x-auto p-4">
+    <div class="overflow-x-auto">
         <table class="w-full text-sm">
-            <thead class="border-y border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500">
+            <thead class="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500">
                 <tr>
-                    <th class="px-4 py-3">#</th>
-                    <th class="px-4 py-3">Product</th>
+                    <th class="px-4 py-3">Id</th>
+                    <th class="px-4 py-3">Title</th>
                     <th class="px-4 py-3">Category</th>
+                    <th class="px-4 py-3">Keywords</th>
+                    <th class="px-4 py-3">Image</th>
                     <th class="px-4 py-3">Price</th>
                     <th class="px-4 py-3">Stock</th>
                     <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3">Actions</th>
+                    <th class="px-4 py-3">Edit</th>
+                    <th class="px-4 py-3">Delete</th>
+                    <th class="px-4 py-3">Show</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse ($products as $product)
                     <tr class="hover:bg-slate-50">
                         <td class="px-4 py-3 text-slate-500">{{ $product->id }}</td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-3">
-                                <img src="{{ $product->image }}" alt="" class="h-10 w-10 rounded object-cover">
-                                <span class="font-medium text-slate-800">{{ $product->title }}</span>
-                            </div>
-                        </td>
+                        <td class="px-4 py-3 font-medium text-slate-800">{{ $product->title }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ $product->category?->title }}</td>
+                        <td class="max-w-[120px] truncate px-4 py-3 text-slate-500">{{ $product->keywords ?? '—' }}</td>
+                        <td class="px-4 py-3">
+                            <img src="{{ $product->image }}" alt="" class="h-12 w-10 rounded border object-cover">
+                        </td>
                         <td class="px-4 py-3 font-semibold">{{ $product->formattedPrice() }}</td>
                         <td class="px-4 py-3">{{ $product->stock }}</td>
                         <td class="px-4 py-3">
-                            <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $product->status === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">
-                                {{ ucfirst($product->status) }}
+                            <span class="text-xs font-semibold {{ $product->status === 'active' ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $product->status === 'active' ? 'True' : 'False' }}
                             </span>
                         </td>
                         <td class="px-4 py-3">
-                            <div class="flex gap-2">
-                                <a href="{{ route('admin.products.edit', $product->id) }}" class="rounded bg-admin-primary px-2 py-1 text-xs text-white">Edit</a>
-                                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Delete this product?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="rounded bg-admin-danger px-2 py-1 text-xs text-white">Delete</button>
-                                </form>
-                            </div>
+                            <a href="{{ route('admin.products.edit', $product->id) }}" class="inline-block rounded bg-admin-primary px-3 py-1 text-xs font-semibold text-white hover:bg-blue-600">Edit</a>
+                        </td>
+                        <td class="px-4 py-3">
+                            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Delete this product?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="rounded bg-admin-danger px-3 py-1 text-xs font-semibold text-white hover:bg-red-600">Delete</button>
+                            </form>
+                        </td>
+                        <td class="px-4 py-3">
+                            <a href="{{ route('admin.products.show', $product->id) }}" class="inline-block rounded bg-green-600 px-3 py-1 text-xs font-semibold text-white hover:bg-green-700">Show</a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-10 text-center text-slate-500">No products yet. <a href="{{ route('admin.products.create') }}" class="text-admin-primary hover:underline">Add one</a></td>
+                        <td colspan="11" class="px-4 py-10 text-center text-slate-500">No products yet. <a href="{{ route('admin.products.create') }}" class="text-admin-primary hover:underline">Add one</a></td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
-
-        <div class="mt-4">{{ $products->links() }}</div>
     </div>
+
+    <div class="border-t border-slate-200 px-4 py-3">{{ $products->links() }}</div>
 </div>
 @endsection

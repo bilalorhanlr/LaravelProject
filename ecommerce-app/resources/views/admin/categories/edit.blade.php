@@ -9,7 +9,7 @@
     <form action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
-        @include('admin.categories._form')
+        @include('admin.categories._form', ['category' => $category, 'parentOptions' => $parentOptions])
     </form>
 </div>
 @endsection

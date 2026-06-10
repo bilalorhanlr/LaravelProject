@@ -5,25 +5,35 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImage;
+use App\Services\ImageUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    public function __construct(private ImageUploadService $images) {}
+
     public function index(): View
     {
         return view('admin.products.index', [
-            'products' => Product::with('category')->latest()->paginate(10),
+            'products' => Product::with('category')->latest()->paginate(15),
         ]);
+    }
+
+    public function show(int $id): View
+    {
+        $product = Product::with(['category', 'images', 'comments.user'])->findOrFail($id);
+
+        return view('admin.products.show', compact('product'));
     }
 
     public function create(): View
     {
         return view('admin.products.create', [
-            'categories' => Category::orderBy('title')->get(),
+            'categories' => Category::nestedOptions(),
         ]);
     }
 
@@ -42,6 +52,8 @@ class ProductController extends Controller
             'brand' => ['nullable', 'string', 'max:100'],
             'image' => ['nullable', 'image', 'max:2048'],
             'image_url' => ['nullable', 'url', 'max:500'],
+            'gallery' => ['nullable', 'array'],
+            'gallery.*' => ['image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
             'is_new' => ['boolean'],
             'is_featured' => ['boolean'],
@@ -52,12 +64,12 @@ class ProductController extends Controller
         $slug = $validated['slug'] ?? Str::slug($validated['title']);
         $slug = $this->uniqueSlug($slug);
 
-        $image = $this->resolveImage($request, $validated['image_url'] ?? null, 'products');
+        $image = $this->images->store($request->file('image'), $validated['image_url'] ?? null, 'products');
         if (! $image) {
             return back()->withInput()->with('error', 'Product image is required (upload or URL).');
         }
 
-        Product::create([
+        $product = Product::create([
             'category_id' => $validated['category_id'],
             'title' => $validated['title'],
             'slug' => $slug,
@@ -79,20 +91,22 @@ class ProductController extends Controller
             'review_count' => 0,
         ]);
 
+        $this->storeGalleryImages($product, $request->file('gallery', []));
+
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
 
     public function edit(int $id): View
     {
         return view('admin.products.edit', [
-            'product' => Product::findOrFail($id),
-            'categories' => Category::orderBy('title')->get(),
+            'product' => Product::with('images')->findOrFail($id),
+            'categories' => Category::nestedOptions(),
         ]);
     }
 
     public function update(Request $request, int $id): RedirectResponse
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('images')->findOrFail($id);
 
         $validated = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
@@ -107,6 +121,8 @@ class ProductController extends Controller
             'brand' => ['nullable', 'string', 'max:100'],
             'image' => ['nullable', 'image', 'max:2048'],
             'image_url' => ['nullable', 'url', 'max:500'],
+            'gallery' => ['nullable', 'array'],
+            'gallery.*' => ['image', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
             'is_new' => ['boolean'],
             'is_featured' => ['boolean'],
@@ -121,8 +137,8 @@ class ProductController extends Controller
 
         $image = $product->image;
         if ($request->hasFile('image') || ! empty($validated['image_url'])) {
-            $this->deleteStoredImage($product->image);
-            $image = $this->resolveImage($request, $validated['image_url'] ?? null, 'products') ?? $product->image;
+            $this->images->delete($product->image);
+            $image = $this->images->store($request->file('image'), $validated['image_url'] ?? null, 'products') ?? $product->image;
         }
 
         $product->update([
@@ -145,16 +161,48 @@ class ProductController extends Controller
             'discount_percent' => $validated['discount_percent'] ?? null,
         ]);
 
+        $this->storeGalleryImages($product, $request->file('gallery', []));
+
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
     }
 
     public function destroy(int $id): RedirectResponse
     {
-        $product = Product::findOrFail($id);
-        $this->deleteStoredImage($product->image);
+        $product = Product::with('images')->findOrFail($id);
+
+        $this->images->delete($product->image);
+        foreach ($product->images as $galleryImage) {
+            $this->images->delete($galleryImage->image);
+        }
+
         $product->delete();
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+    }
+
+    public function destroyImage(int $id, int $imageId): RedirectResponse
+    {
+        $product = Product::findOrFail($id);
+        $image = ProductImage::where('product_id', $product->id)->findOrFail($imageId);
+
+        $this->images->delete($image->image);
+        $image->delete();
+
+        return back()->with('success', 'Gallery image removed.');
+    }
+
+    /**
+     * @param  array<int, \Illuminate\Http\UploadedFile>|null  $files
+     */
+    private function storeGalleryImages(Product $product, ?array $files): void
+    {
+        if (empty($files)) {
+            return;
+        }
+
+        foreach ($this->images->storeMany($files, 'products/gallery') as $url) {
+            $product->images()->create(['image' => $url]);
+        }
     }
 
     private function uniqueSlug(string $slug, ?int $exceptId = null): string
@@ -167,24 +215,5 @@ class ProductController extends Controller
         }
 
         return $slug;
-    }
-
-    private function resolveImage(Request $request, ?string $url, string $folder): ?string
-    {
-        if ($request->hasFile('image')) {
-            return Storage::disk('public')->url($request->file('image')->store($folder, 'public'));
-        }
-
-        return $url;
-    }
-
-    private function deleteStoredImage(?string $path): void
-    {
-        if (! $path || ! str_contains($path, '/storage/')) {
-            return;
-        }
-
-        $relative = str_replace('/storage/', '', parse_url($path, PHP_URL_PATH) ?? '');
-        Storage::disk('public')->delete($relative);
     }
 }

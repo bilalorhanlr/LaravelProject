@@ -4,14 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Services\ImageUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
+    public function __construct(private ImageUploadService $images) {}
+
     public function index(): View
     {
         return view('admin.categories.index', [
@@ -23,10 +25,36 @@ class CategoryController extends Controller
         ]);
     }
 
+    public function tree(): View
+    {
+        $roots = Category::roots()
+            ->with(['children' => function ($q) {
+                $q->withCount('products')
+                    ->with(['children' => fn ($q2) => $q2->withCount('products')->orderBy('sort_order')->orderBy('title')])
+                    ->orderBy('sort_order')
+                    ->orderBy('title');
+            }])
+            ->withCount('products')
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get();
+
+        return view('admin.categories.tree', compact('roots'));
+    }
+
+    public function show(int $id): View
+    {
+        $category = Category::with(['parent', 'children', 'products'])
+            ->withCount('products')
+            ->findOrFail($id);
+
+        return view('admin.categories.show', compact('category'));
+    }
+
     public function create(): View
     {
         return view('admin.categories.create', [
-            'parents' => Category::whereNull('parent_id')->orderBy('title')->get(),
+            'parentOptions' => Category::nestedOptions(),
         ]);
     }
 
@@ -53,7 +81,7 @@ class CategoryController extends Controller
             'slug' => $slug,
             'keywords' => $validated['keywords'] ?? null,
             'description' => $validated['description'] ?? null,
-            'image' => $this->resolveImage($request, $validated['image_url'] ?? null, 'categories'),
+            'image' => $this->images->store($request->file('image'), $validated['image_url'] ?? null, 'categories'),
             'status' => $validated['status'],
             'sort_order' => $validated['sort_order'] ?? 0,
         ]);
@@ -67,7 +95,7 @@ class CategoryController extends Controller
 
         return view('admin.categories.edit', [
             'category' => $category,
-            'parents' => Category::whereNull('parent_id')->where('id', '!=', $id)->orderBy('title')->get(),
+            'parentOptions' => Category::nestedOptions($id),
         ]);
     }
 
@@ -94,8 +122,8 @@ class CategoryController extends Controller
 
         $image = $category->image;
         if ($request->hasFile('image') || ! empty($validated['image_url'])) {
-            $this->deleteStoredImage($category->image);
-            $image = $this->resolveImage($request, $validated['image_url'] ?? null, 'categories');
+            $this->images->delete($category->image);
+            $image = $this->images->store($request->file('image'), $validated['image_url'] ?? null, 'categories');
         }
 
         $category->update([
@@ -121,7 +149,7 @@ class CategoryController extends Controller
         }
 
         $category->children()->each(fn (Category $child) => $child->delete());
-        $this->deleteStoredImage($category->image);
+        $this->images->delete($category->image);
         $category->delete();
 
         return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
@@ -137,24 +165,5 @@ class CategoryController extends Controller
         }
 
         return $slug;
-    }
-
-    private function resolveImage(Request $request, ?string $url, string $folder): ?string
-    {
-        if ($request->hasFile('image')) {
-            return Storage::disk('public')->url($request->file('image')->store($folder, 'public'));
-        }
-
-        return $url;
-    }
-
-    private function deleteStoredImage(?string $path): void
-    {
-        if (! $path || ! str_contains($path, '/storage/')) {
-            return;
-        }
-
-        $relative = str_replace('/storage/', '', parse_url($path, PHP_URL_PATH) ?? '');
-        Storage::disk('public')->delete($relative);
     }
 }

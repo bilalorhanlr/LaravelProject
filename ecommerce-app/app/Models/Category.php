@@ -49,4 +49,65 @@ class Category extends Model
     {
         return $query->where('status', 'active');
     }
+
+    public function scopeRoots($query)
+    {
+        return $query->whereNull('parent_id');
+    }
+
+    /**
+     * @return array<int, array{id: int, title: string, depth: int}>
+     */
+    public static function nestedOptions(?int $excludeId = null): array
+    {
+        $all = static::orderBy('sort_order')->orderBy('title')->get();
+        $excludeIds = $excludeId ? static::descendantIds($excludeId, $all)->push($excludeId)->all() : [];
+
+        return static::buildNestedOptions($all, null, 0, $excludeIds);
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, Category>  $all
+     * @param  array<int, int>  $excludeIds
+     * @return array<int, array{id: int, title: string, depth: int}>
+     */
+    private static function buildNestedOptions($all, ?int $parentId, int $depth, array $excludeIds): array
+    {
+        $options = [];
+
+        foreach ($all->where('parent_id', $parentId) as $category) {
+            if (in_array($category->id, $excludeIds, true)) {
+                continue;
+            }
+
+            $options[] = [
+                'id' => $category->id,
+                'title' => str_repeat('— ', $depth).$category->title,
+                'depth' => $depth,
+            ];
+
+            $options = array_merge(
+                $options,
+                static::buildNestedOptions($all, $category->id, $depth + 1, $excludeIds)
+            );
+        }
+
+        return $options;
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, Category>  $all
+     * @return \Illuminate\Support\Collection<int, int>
+     */
+    private static function descendantIds(int $id, $all): \Illuminate\Support\Collection
+    {
+        $ids = collect();
+
+        foreach ($all->where('parent_id', $id) as $child) {
+            $ids->push($child->id);
+            $ids = $ids->merge(static::descendantIds($child->id, $all));
+        }
+
+        return $ids;
+    }
 }

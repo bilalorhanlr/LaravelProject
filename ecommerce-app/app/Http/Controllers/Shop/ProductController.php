@@ -46,7 +46,7 @@ class ProductController extends Controller
 
     public function show(Product $product): View
     {
-        $product->load('category.parent');
+        $product->load(['category.parent', 'images']);
 
         return view('shop.products.show', [
             'product' => $product,
