@@ -7,6 +7,9 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=source-sans-3:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+    <style>ion-icon { pointer-events: none; }</style>
     @stack('styles')
 </head>
 <body class="bg-admin-body font-sans text-slate-700 antialiased" x-data="{ sidebarOpen: true, sidebarMobile: false }">
