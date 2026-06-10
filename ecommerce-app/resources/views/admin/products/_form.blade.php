@@ -1,0 +1,106 @@
+<div class="grid gap-5 md:grid-cols-2">
+    <div class="md:col-span-2">
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Title *</label>
+        <input type="text" name="title" value="{{ old('title', $product->title ?? '') }}" required
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Category *</label>
+        <select name="category_id" required class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+            <option value="">Select category</option>
+            @foreach ($categories as $cat)
+                <option value="{{ $cat->id }}" @selected(old('category_id', $product->category_id ?? '') == $cat->id)>{{ $cat->title }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Slug</label>
+        <input type="text" name="slug" value="{{ old('slug', $product->slug ?? '') }}"
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Price *</label>
+        <input type="number" step="0.01" min="0" name="price" value="{{ old('price', $product->price ?? '') }}" required
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Original Price</label>
+        <input type="number" step="0.01" min="0" name="original_price" value="{{ old('original_price', $product->original_price ?? '') }}"
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Stock *</label>
+        <input type="number" min="0" name="stock" value="{{ old('stock', $product->stock ?? 0) }}" required
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Brand</label>
+        <input type="text" name="brand" value="{{ old('brand', $product->brand ?? 'E-SHOP') }}"
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Discount %</label>
+        <input type="number" min="0" max="100" name="discount_percent" value="{{ old('discount_percent', $product->discount_percent ?? '') }}"
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Status *</label>
+        <select name="status" required class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+            <option value="active" @selected(old('status', $product->status ?? 'active') === 'active')>Active</option>
+            <option value="inactive" @selected(old('status', $product->status ?? '') === 'inactive')>Inactive</option>
+        </select>
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Keywords</label>
+        <input type="text" name="keywords" value="{{ old('keywords', $product->keywords ?? '') }}"
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    <div class="md:col-span-2 flex flex-wrap gap-6">
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="is_new" value="1" @checked(old('is_new', $product->is_new ?? false))> New</label>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="is_featured" value="1" @checked(old('is_featured', $product->is_featured ?? false))> Featured</label>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="is_deal" value="1" @checked(old('is_deal', $product->is_deal ?? false))> Deal</label>
+    </div>
+
+    <div class="md:col-span-2">
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Description</label>
+        <textarea name="description" rows="2" class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">{{ old('description', $product->description ?? '') }}</textarea>
+    </div>
+
+    <div class="md:col-span-2">
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Detail</label>
+        <textarea name="detail" rows="4" class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">{{ old('detail', $product->detail ?? '') }}</textarea>
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Upload Image {{ isset($product) ? '' : '*' }}</label>
+        <input type="file" name="image" accept="image/*" class="w-full text-sm text-slate-600">
+    </div>
+
+    <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Or Image URL</label>
+        <input type="url" name="image_url" value="{{ old('image_url') }}" placeholder="https://..."
+            class="w-full rounded border-slate-300 text-sm focus:border-admin-primary focus:ring-admin-primary">
+    </div>
+
+    @if (!empty($product?->image))
+        <div class="md:col-span-2">
+            <p class="mb-1 text-sm font-semibold text-slate-700">Current Image</p>
+            <img src="{{ $product->image }}" alt="" class="h-24 w-24 rounded object-cover border">
+        </div>
+    @endif
+</div>
+
+<div class="mt-6 flex gap-3">
+    <button type="submit" class="rounded bg-admin-primary px-5 py-2 text-sm font-semibold text-white hover:bg-blue-600">Save</button>
+    <a href="{{ route('admin.products.index') }}" class="rounded border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</a>
+</div>

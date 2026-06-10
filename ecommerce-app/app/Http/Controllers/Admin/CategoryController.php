@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
@@ -11,7 +15,146 @@ class CategoryController extends Controller
     public function index(): View
     {
         return view('admin.categories.index', [
-            'categories' => Category::whereNull('parent_id')->with('children')->orderBy('sort_order')->get(),
+            'categories' => Category::with('parent')
+                ->withCount('children', 'products')
+                ->orderBy('sort_order')
+                ->orderBy('title')
+                ->paginate(15),
         ]);
+    }
+
+    public function create(): View
+    {
+        return view('admin.categories.create', [
+            'parents' => Category::whereNull('parent_id')->orderBy('title')->get(),
+        ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'parent_id' => ['nullable', 'exists:categories,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug'],
+            'keywords' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'max:2048'],
+            'image_url' => ['nullable', 'url', 'max:500'],
+            'status' => ['required', 'in:active,inactive'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+        ]);
+
+        $slug = $validated['slug'] ?? Str::slug($validated['title']);
+        $slug = $this->uniqueSlug($slug);
+
+        Category::create([
+            'parent_id' => $validated['parent_id'] ?? null,
+            'title' => $validated['title'],
+            'slug' => $slug,
+            'keywords' => $validated['keywords'] ?? null,
+            'description' => $validated['description'] ?? null,
+            'image' => $this->resolveImage($request, $validated['image_url'] ?? null, 'categories'),
+            'status' => $validated['status'],
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
+    }
+
+    public function edit(int $id): View
+    {
+        $category = Category::findOrFail($id);
+
+        return view('admin.categories.edit', [
+            'category' => $category,
+            'parents' => Category::whereNull('parent_id')->where('id', '!=', $id)->orderBy('title')->get(),
+        ]);
+    }
+
+    public function update(Request $request, int $id): RedirectResponse
+    {
+        $category = Category::findOrFail($id);
+
+        $validated = $request->validate([
+            'parent_id' => ['nullable', 'exists:categories,id', 'not_in:'.$id],
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug,'.$id],
+            'keywords' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'max:2048'],
+            'image_url' => ['nullable', 'url', 'max:500'],
+            'status' => ['required', 'in:active,inactive'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+        ]);
+
+        $slug = $validated['slug'] ?? Str::slug($validated['title']);
+        if ($slug !== $category->slug) {
+            $slug = $this->uniqueSlug($slug, $id);
+        }
+
+        $image = $category->image;
+        if ($request->hasFile('image') || ! empty($validated['image_url'])) {
+            $this->deleteStoredImage($category->image);
+            $image = $this->resolveImage($request, $validated['image_url'] ?? null, 'categories');
+        }
+
+        $category->update([
+            'parent_id' => $validated['parent_id'] ?? null,
+            'title' => $validated['title'],
+            'slug' => $slug,
+            'keywords' => $validated['keywords'] ?? null,
+            'description' => $validated['description'] ?? null,
+            'image' => $image,
+            'status' => $validated['status'],
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
+    }
+
+    public function destroy(int $id): RedirectResponse
+    {
+        $category = Category::findOrFail($id);
+
+        if ($category->products()->exists()) {
+            return back()->with('error', 'Cannot delete: category has products. Move or delete products first.');
+        }
+
+        $category->children()->each(fn (Category $child) => $child->delete());
+        $this->deleteStoredImage($category->image);
+        $category->delete();
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
+    }
+
+    private function uniqueSlug(string $slug, ?int $exceptId = null): string
+    {
+        $original = $slug;
+        $counter = 1;
+
+        while (Category::where('slug', $slug)->when($exceptId, fn ($q) => $q->where('id', '!=', $exceptId))->exists()) {
+            $slug = $original.'-'.$counter++;
+        }
+
+        return $slug;
+    }
+
+    private function resolveImage(Request $request, ?string $url, string $folder): ?string
+    {
+        if ($request->hasFile('image')) {
+            return Storage::disk('public')->url($request->file('image')->store($folder, 'public'));
+        }
+
+        return $url;
+    }
+
+    private function deleteStoredImage(?string $path): void
+    {
+        if (! $path || ! str_contains($path, '/storage/')) {
+            return;
+        }
+
+        $relative = str_replace('/storage/', '', parse_url($path, PHP_URL_PATH) ?? '');
+        Storage::disk('public')->delete($relative);
     }
 }

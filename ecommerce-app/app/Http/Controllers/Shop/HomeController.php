@@ -11,9 +11,9 @@ class HomeController extends Controller
     public function index(): View
     {
         return view('shop.home', [
-            'featuredProducts' => Product::with('category')->where('is_featured', true)->latest()->take(4)->get(),
-            'latestProducts' => Product::with('category')->latest()->take(8)->get(),
-            'dealProducts' => Product::with('category')->where('is_deal', true)->latest()->take(4)->get(),
+            'featuredProducts' => Product::with('category')->active()->where('is_featured', true)->latest()->take(4)->get(),
+            'latestProducts' => Product::with('category')->active()->latest()->take(8)->get(),
+            'dealProducts' => Product::with('category')->active()->where('is_deal', true)->latest()->take(4)->get(),
         ]);
     }
 }

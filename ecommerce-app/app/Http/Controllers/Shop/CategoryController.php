@@ -13,7 +13,8 @@ class CategoryController extends Controller
     {
         return view('shop.categories.index', [
             'categories' => Category::whereNull('parent_id')
-                ->with(['children', 'products'])
+                ->active()
+                ->with(['children' => fn ($q) => $q->active()])
                 ->withCount('products')
                 ->orderBy('sort_order')
                 ->get(),
@@ -27,6 +28,7 @@ class CategoryController extends Controller
         return view('shop.categories.show', [
             'category' => $category->load(['children', 'parent']),
             'products' => Product::with('category')
+                ->active()
                 ->whereIn('category_id', $categoryIds)
                 ->latest()
                 ->paginate(12),

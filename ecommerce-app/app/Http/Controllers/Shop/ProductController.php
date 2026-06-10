@@ -12,10 +12,10 @@ class ProductController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Product::with('category')->latest();
+        $query = Product::with('category')->active()->latest();
 
         if ($request->filled('q')) {
-            $query->where('name', 'like', '%'.$request->string('q').'%');
+            $query->where('title', 'like', '%'.$request->string('q').'%');
         }
 
         if ($request->filled('category')) {
@@ -36,6 +36,7 @@ class ProductController extends Controller
     {
         return view('shop.products.index', [
             'products' => Product::with('category')
+                ->active()
                 ->whereNotNull('original_price')
                 ->latest()
                 ->paginate(12),
@@ -49,7 +50,8 @@ class ProductController extends Controller
 
         return view('shop.products.show', [
             'product' => $product,
-            'relatedProducts' => Product::where('category_id', $product->category_id)
+            'relatedProducts' => Product::active()
+                ->where('category_id', $product->category_id)
                 ->where('id', '!=', $product->id)
                 ->take(4)
                 ->get(),

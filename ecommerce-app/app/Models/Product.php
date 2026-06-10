@@ -92,4 +92,9 @@ class Product extends Model
     {
         return $this->original_price ? '$'.number_format($this->original_price, 2) : null;
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
 }

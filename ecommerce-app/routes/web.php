@@ -37,8 +37,21 @@ Route::get('/checkout', [PageController::class, 'checkout'])->name('pages.checko
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+
     Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+    Route::get('/categories/create', [AdminCategoryController::class, 'create'])->name('categories.create');
+    Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+    Route::get('/categories/{id}/edit', [AdminCategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('/categories/{id}', [AdminCategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{id}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+
+    Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [AdminProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{id}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{id}', [AdminProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [AdminProductController::class, 'destroy'])->name('products.destroy');
+
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers.index');
 });
