@@ -5,3 +5,22 @@
 [x-cloak] {
     display: none;
 }
+
+@layer components {
+    .shop-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-shop-orange px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-shop-orange/25 transition hover:bg-shop-orange-dark hover:shadow-shop-orange/40;
+    }
+
+    .shop-btn-outline {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-shop-dark transition hover:border-shop-orange hover:text-shop-orange;
+    }
+
+    .shop-section-title {
+        @apply text-2xl font-bold tracking-tight text-shop-dark md:text-3xl;
+    }
+
+    .shop-section-title::after {
+        content: '';
+        @apply mt-2 block h-1 w-16 rounded-full bg-shop-orange;
+    }
+}

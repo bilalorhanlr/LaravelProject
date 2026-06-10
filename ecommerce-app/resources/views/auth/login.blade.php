@@ -1,48 +1,63 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+@extends('layouts.auth')
 
-        <x-validation-errors class="mb-4" />
+@section('title', 'Login')
 
-        @session('status')
-            <div class="mb-4 font-medium text-sm text-green-600">
-                {{ $value }}
-            </div>
-        @endsession
+@section('content')
+<div>
+    <h1 class="text-3xl font-extrabold tracking-tight text-shop-dark">Welcome back</h1>
+    <p class="mt-2 text-shop-muted">Sign in to your account to continue shopping.</p>
 
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
+    @if ($errors->any())
+        <div class="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            <ul class="list-inside list-disc space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-            <div>
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            </div>
+    @session('status')
+        <div class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {{ $value }}
+        </div>
+    @endsession
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
-            </div>
+    <form method="POST" action="{{ route('login') }}" class="mt-8 space-y-5">
+        @csrf
 
-            <div class="block mt-4">
-                <label for="remember_me" class="flex items-center">
-                    <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-                </label>
-            </div>
+        <div>
+            <label for="email" class="mb-1.5 block text-sm font-semibold text-shop-dark">Email</label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
+                class="w-full rounded-xl border-slate-200 shadow-sm focus:border-shop-orange focus:ring-shop-orange">
+        </div>
 
-            <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
+        <div>
+            <label for="password" class="mb-1.5 block text-sm font-semibold text-shop-dark">Password</label>
+            <input id="password" type="password" name="password" required autocomplete="current-password"
+                class="w-full rounded-xl border-slate-200 shadow-sm focus:border-shop-orange focus:ring-shop-orange">
+        </div>
 
-                <x-button class="ms-4">
-                    {{ __('Log in') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+        <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 text-sm text-shop-muted">
+                <input type="checkbox" name="remember" class="rounded border-slate-300 text-shop-orange focus:ring-shop-orange">
+                Remember me
+            </label>
+            @if (Route::has('password.request'))
+                <a href="{{ route('password.request') }}" class="text-sm font-semibold text-shop-orange hover:underline">Forgot password?</a>
+            @endif
+        </div>
+
+        <button type="submit" class="shop-btn w-full py-3.5">Sign In</button>
+    </form>
+
+    <p class="mt-8 text-center text-sm text-shop-muted">
+        Don't have an account?
+        <a href="{{ route('register') }}" class="font-semibold text-shop-orange hover:underline">Create one</a>
+    </p>
+
+    <a href="{{ route('home') }}" class="mt-6 flex items-center justify-center gap-2 text-sm text-shop-muted hover:text-shop-orange">
+        ← Back to store
+    </a>
+</div>
+@endsection
