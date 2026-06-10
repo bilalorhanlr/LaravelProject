@@ -94,4 +94,35 @@ class User extends Authenticatable
     {
         return $this->hasMany(Shopcart::class);
     }
+
+    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function assignRole(string $role): void
+    {
+        $roleModel = Role::where('name', $role)->firstOrFail();
+
+        $this->roles()->syncWithoutDetaching([$roleModel->id]);
+    }
+
+    public function removeRole(string $role): void
+    {
+        $roleModel = Role::where('name', $role)->first();
+
+        if ($roleModel) {
+            $this->roles()->detach($roleModel->id);
+        }
+    }
 }

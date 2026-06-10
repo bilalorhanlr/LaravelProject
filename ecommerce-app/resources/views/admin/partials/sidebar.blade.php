@@ -97,6 +97,14 @@
                 </a>
             </li>
 
+            {{-- Roles --}}
+            <li>
+                <a href="{{ route('admin.roles.index') }}" class="{{ $linkClass(request()->routeIs('admin.roles.*')) }}">
+                    <ion-icon name="shield-checkmark-outline" class="text-xl text-slate-300"></ion-icon>
+                    <span x-show="sidebarOpen" x-cloak>Roles</span>
+                </a>
+            </li>
+
             {{-- Social --}}
             <li>
                 <a href="{{ route('admin.socials.index') }}" class="{{ $linkClass(request()->routeIs('admin.socials.*')) }}">

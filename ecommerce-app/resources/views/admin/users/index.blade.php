@@ -16,6 +16,7 @@
                     <th class="px-4 py-3">#</th>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Email</th>
+                    <th class="px-4 py-3">Roles</th>
                     <th class="px-4 py-3">Type</th>
                     <th class="px-4 py-3">Status</th>
                     <th class="px-4 py-3">Joined</th>
@@ -34,6 +35,13 @@
                             </div>
                         </td>
                         <td class="px-4 py-3 text-slate-600">{{ $user->email }}</td>
+                        <td class="px-4 py-3">
+                            @forelse ($user->roles as $role)
+                                <span class="mr-1 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold capitalize text-blue-700">{{ $role->name }}</span>
+                            @empty
+                                <span class="text-slate-400">—</span>
+                            @endforelse
+                        </td>
                         <td class="px-4 py-3 text-slate-600">{{ ucfirst($user->type ?? 'customer') }}</td>
                         <td class="px-4 py-3">
                             <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ ($user->status ?? 'active') === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">
@@ -44,7 +52,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-10 text-center text-slate-500">No users yet.</td>
+                        <td colspan="7" class="px-4 py-10 text-center text-slate-500">No users yet.</td>
                     </tr>
                 @endforelse
             </tbody>

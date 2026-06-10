@@ -29,10 +29,16 @@
                 @auth
                     <div class="flex flex-col items-end gap-0.5">
                         <span class="text-sm font-semibold text-shop-dark">{{ Auth::user()->name }}</span>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="text-xs font-semibold text-shop-orange hover:underline">Logout</button>
-                        </form>
+                        <div class="flex items-center gap-2 text-xs">
+                            @if (Auth::user()->isAdmin())
+                                <a href="{{ route('admin.dashboard') }}" class="font-semibold text-shop-orange hover:underline">Admin Panel</a>
+                                <span class="text-shop-muted">·</span>
+                            @endif
+                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                                @csrf
+                                <button type="submit" class="font-semibold text-shop-orange hover:underline">Logout</button>
+                            </form>
+                        </div>
                     </div>
                 @else
                     <div class="text-sm font-semibold">
