@@ -3,7 +3,11 @@
 @section('title', 'Settings')
 
 @section('content')
-@include('admin.partials.page-header', ['title' => 'Settings', 'breadcrumb' => ucfirst($tab)])
+@include('admin.partials.page-header', [
+    'title' => 'Settings',
+    'breadcrumb' => ucfirst($tab),
+    'description' => 'Configure store information, pages and integrations.',
+])
 
 @php
     $tabLabels = [
@@ -16,19 +20,21 @@
     ];
 @endphp
 
-<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-    <div class="flex flex-wrap border-b border-slate-200 bg-admin-primary">
-        @foreach ($tabs as $tabKey)
-            <a
-                href="{{ route('admin.settings.index', ['tab' => $tabKey]) }}"
-                class="px-4 py-3 text-sm font-semibold transition {{ $tab === $tabKey ? 'bg-white text-admin-primary' : 'text-white hover:bg-white/10' }}"
-            >
-                {{ $tabLabels[$tabKey] }}
-            </a>
-        @endforeach
+<div class="admin-card">
+    <div class="border-b border-slate-100 px-5 py-4">
+        <div class="flex flex-wrap gap-2">
+            @foreach ($tabs as $tabKey)
+                <a
+                    href="{{ route('admin.settings.index', ['tab' => $tabKey]) }}"
+                    class="rounded-full px-4 py-2 text-sm font-semibold transition {{ $tab === $tabKey ? 'bg-admin-primary text-white shadow-sm shadow-admin-primary/25' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}"
+                >
+                    {{ $tabLabels[$tabKey] }}
+                </a>
+            @endforeach
+        </div>
     </div>
 
-    <form action="{{ route('admin.settings.update') }}" method="POST" class="p-6">
+    <form action="{{ route('admin.settings.update') }}" method="POST" class="admin-card-body">
         @csrf
         @method('PUT')
         <input type="hidden" name="tab" value="{{ $tab }}">
@@ -129,7 +135,7 @@
         @endif
 
         <div class="mt-6">
-            <button type="submit" class="rounded bg-admin-primary px-6 py-2 text-sm font-semibold text-white hover:bg-blue-600">Update Setting</button>
+            <button type="submit" class="admin-btn">Update Settings</button>
         </div>
     </form>
 </div>

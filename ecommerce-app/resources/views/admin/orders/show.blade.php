@@ -3,39 +3,31 @@
 @section('title', 'Order #'.$order->id)
 
 @section('content')
-@include('admin.partials.page-header', ['title' => 'Order #'.$order->id, 'breadcrumb' => 'Orders / Show'])
+@include('admin.partials.page-header', [
+    'title' => 'Order #'.$order->id,
+    'breadcrumb' => 'Orders / Detail',
+    'description' => $order->customerName().' · '.$order->created_at->format('M d, Y H:i'),
+])
 
-@if (session('success'))
-    <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{{ session('success') }}</div>
-@endif
-
-@if ($errors->any())
-    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-        @foreach ($errors->all() as $error)
-            <p>{{ $error }}</p>
-        @endforeach
-    </div>
-@endif
-
-<div class="mb-4 flex flex-wrap gap-2">
-    <a href="{{ route('admin.orders.index') }}" class="rounded border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">← Back to Orders</a>
+<div class="mb-5 flex flex-wrap gap-2">
+    <a href="{{ route('admin.orders.index') }}" class="admin-btn-outline">← Back to Orders</a>
     @if ($order->status === \App\Models\Order::STATUS_PENDING)
         <form action="{{ route('admin.orders.accept', $order->id) }}" method="POST">
             @csrf
             @method('PATCH')
-            <button type="submit" class="rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700" onclick="return confirm('Approve this order?')">Accept Order</button>
+            <button type="submit" class="admin-btn !bg-admin-success hover:!bg-emerald-600" onclick="return confirm('Approve this order?')">Accept Order</button>
         </form>
         <form action="{{ route('admin.orders.reject', $order->id) }}" method="POST">
             @csrf
             @method('PATCH')
-            <button type="submit" class="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" onclick="return confirm('Reject this order? Stock will be restored.')">Cancel Order</button>
+            <button type="submit" class="admin-btn !bg-admin-danger hover:!bg-red-600" onclick="return confirm('Reject this order? Stock will be restored.')">Cancel Order</button>
         </form>
     @endif
 </div>
 
 <div class="grid gap-6 lg:grid-cols-3">
     <div class="space-y-6 lg:col-span-1">
-        <div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="admin-card">
             <div class="border-b border-slate-200 px-6 py-4">
                 <div class="flex items-center justify-between">
                     <h3 class="font-semibold text-slate-800">Order Status</h3>
@@ -66,8 +58,8 @@
             </dl>
         </div>
 
-        <div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div class="border-b border-slate-200 px-6 py-4">
+        <div class="admin-card">
+            <div class="admin-card-header">
                 <h3 class="font-semibold text-slate-800">Customer</h3>
             </div>
             <dl class="space-y-4 p-6 text-sm">
@@ -104,8 +96,8 @@
     </div>
 
     <div class="lg:col-span-2">
-        <div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div class="border-b border-slate-200 px-6 py-4">
+        <div class="admin-card">
+            <div class="admin-card-header">
                 <h3 class="font-semibold text-slate-800">Order Items</h3>
             </div>
             <div class="overflow-x-auto">

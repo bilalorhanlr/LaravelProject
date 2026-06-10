@@ -1,80 +1,86 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Category List')
+@section('title', 'Categories')
 
 @section('content')
-@include('admin.partials.page-header', ['title' => 'Category List', 'breadcrumb' => 'Home / Category List'])
+@include('admin.partials.page-header', [
+    'title' => 'Category List',
+    'breadcrumb' => 'Categories',
+    'description' => 'Manage product categories and hierarchy.',
+])
 
-<div class="mb-4">
-    <a href="{{ route('admin.categories.create') }}" class="inline-flex items-center gap-2 rounded bg-admin-primary px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600">
+<div class="mb-5 flex flex-wrap gap-2">
+    <a href="{{ route('admin.categories.create') }}" class="admin-btn">
         <ion-icon name="add-outline"></ion-icon> Add Category
     </a>
-    <a href="{{ route('admin.categories.tree') }}" class="ml-2 inline-flex items-center gap-2 rounded border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+    <a href="{{ route('admin.categories.tree') }}" class="admin-btn-outline">
         <ion-icon name="git-network-outline"></ion-icon> Category Tree
     </a>
 </div>
 
-<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+<div class="admin-card">
     <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500">
+        <table class="admin-table">
+            <thead>
                 <tr>
-                    <th class="px-4 py-3">Id</th>
-                    <th class="px-4 py-3">Title</th>
-                    <th class="px-4 py-3">Keywords</th>
-                    <th class="px-4 py-3">Description</th>
-                    <th class="px-4 py-3">Image</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3">Edit</th>
-                    <th class="px-4 py-3">Delete</th>
-                    <th class="px-4 py-3">Show</th>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Keywords</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
+            <tbody>
                 @forelse ($categories as $category)
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3 text-slate-500">{{ $category->id }}</td>
-                        <td class="px-4 py-3 font-medium text-slate-800">
-                            @if ($category->parent)
-                                <span class="text-xs text-slate-400">{{ $category->parent->title }} ›</span>
-                            @endif
-                            {{ $category->title }}
+                    <tr>
+                        <td class="text-slate-500">#{{ $category->id }}</td>
+                        <td>
+                            <p class="font-semibold text-slate-800">
+                                @if ($category->parent)
+                                    <span class="text-xs font-normal text-slate-400">{{ $category->parent->title }} ›</span>
+                                @endif
+                                {{ $category->title }}
+                            </p>
                         </td>
-                        <td class="max-w-[140px] truncate px-4 py-3 text-slate-600">{{ $category->keywords ?? '—' }}</td>
-                        <td class="max-w-[180px] truncate px-4 py-3 text-slate-600">{{ Str::limit(strip_tags($category->description ?? ''), 60) ?: '—' }}</td>
-                        <td class="px-4 py-3">
+                        <td class="max-w-[140px] truncate text-slate-600">{{ $category->keywords ?? '—' }}</td>
+                        <td class="max-w-[180px] truncate text-slate-600">{{ Str::limit(strip_tags($category->description ?? ''), 60) ?: '—' }}</td>
+                        <td>
                             @if ($category->image)
-                                <img src="{{ $category->image }}" alt="" class="h-12 w-10 rounded border object-cover">
+                                <img src="{{ $category->image }}" alt="" class="h-12 w-10 rounded-lg border border-slate-100 object-cover">
+                            @else
+                                <span class="text-slate-400">—</span>
                             @endif
                         </td>
-                        <td class="px-4 py-3">
-                            <span class="text-xs font-semibold {{ $category->status === 'active' ? 'text-green-600' : 'text-red-600' }}">
-                                {{ $category->status === 'active' ? 'True' : 'False' }}
+                        <td>
+                            <span class="{{ $category->status === 'active' ? 'admin-badge-success' : 'admin-badge-danger' }}">
+                                {{ $category->status === 'active' ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-4 py-3">
-                            <a href="{{ route('admin.categories.edit', $category->id) }}" class="inline-block rounded bg-admin-primary px-3 py-1 text-xs font-semibold text-white hover:bg-blue-600">Edit</a>
-                        </td>
-                        <td class="px-4 py-3">
-                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Delete this category?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="rounded bg-admin-danger px-3 py-1 text-xs font-semibold text-white hover:bg-red-600">Delete</button>
-                            </form>
-                        </td>
-                        <td class="px-4 py-3">
-                            <a href="{{ route('admin.categories.show', $category->id) }}" class="inline-block rounded bg-green-600 px-3 py-1 text-xs font-semibold text-white hover:bg-green-700">Show</a>
+                        <td>
+                            <div class="flex flex-wrap justify-end gap-1.5">
+                                <a href="{{ route('admin.categories.show', $category->id) }}" class="admin-btn-ghost">Show</a>
+                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="admin-btn-success !px-3">Edit</a>
+                                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Delete this category?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="admin-btn-danger">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="px-4 py-10 text-center text-slate-500">No categories yet. <a href="{{ route('admin.categories.create') }}" class="text-admin-primary hover:underline">Add one</a></td>
+                        <td colspan="7" class="py-12 text-center text-slate-500">
+                            No categories yet.
+                            <a href="{{ route('admin.categories.create') }}" class="font-semibold text-admin-primary hover:underline">Add one</a>
+                        </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-
-    <div class="border-t border-slate-200 px-4 py-3">{{ $categories->links() }}</div>
+    <div class="admin-card-footer">{{ $categories->links() }}</div>
 </div>
 @endsection

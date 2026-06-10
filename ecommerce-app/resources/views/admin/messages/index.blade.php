@@ -3,58 +3,65 @@
 @section('title', 'Messages')
 
 @section('content')
-@include('admin.partials.page-header', ['title' => 'Messages', 'breadcrumb' => 'List'])
+@include('admin.partials.page-header', [
+    'title' => 'Messages',
+    'breadcrumb' => 'Contact Inbox',
+    'description' => 'Messages submitted through the contact form.',
+])
 
 @if ($unreadCount > 0)
-    <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+    <div class="mb-5 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <ion-icon name="mail-unread-outline" class="text-xl text-amber-500"></ion-icon>
         {{ $unreadCount }} unread message(s) waiting for review.
     </div>
 @endif
 
-<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-    <div class="border-b border-slate-200 px-4 py-3">
-        <h3 class="text-base font-semibold text-slate-800">Message List</h3>
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h3 class="font-semibold text-slate-800">Message List</h3>
     </div>
     <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500">
+        <table class="admin-table">
+            <thead>
                 <tr>
-                    <th class="px-4 py-3">#</th>
-                    <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3">Email</th>
-                    <th class="px-4 py-3">Phone</th>
-                    <th class="px-4 py-3">Message</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Show</th>
+                    <th>#</th>
+                    <th>Sender</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th class="text-right">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
+            <tbody>
                 @forelse ($messages as $message)
-                    <tr class="hover:bg-slate-50 {{ $message->status === 'unread' ? 'bg-amber-50/50' : '' }}">
-                        <td class="px-4 py-3 text-slate-500">{{ $message->id }}</td>
-                        <td class="px-4 py-3 font-medium text-slate-800">{{ $message->name }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ $message->email }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ $message->phone ?? '—' }}</td>
-                        <td class="max-w-xs truncate px-4 py-3 text-slate-600">{{ $message->message }}</td>
-                        <td class="px-4 py-3">
-                            <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $message->status === 'read' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700' }}">
+                    <tr class="{{ $message->status === 'unread' ? 'bg-amber-50/40' : '' }}">
+                        <td class="text-slate-500">#{{ $message->id }}</td>
+                        <td>
+                            <p class="font-semibold text-slate-800">{{ $message->name }}</p>
+                            <p class="text-xs text-slate-500">{{ $message->email }}</p>
+                            @if ($message->phone)
+                                <p class="text-xs text-slate-400">{{ $message->phone }}</p>
+                            @endif
+                        </td>
+                        <td class="max-w-xs truncate text-slate-600">{{ $message->message }}</td>
+                        <td>
+                            <span class="{{ $message->status === 'read' ? 'admin-badge-success' : 'admin-badge-warning' }}">
                                 {{ ucfirst($message->status ?? 'unread') }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-slate-500">{{ $message->created_at->format('M d, Y') }}</td>
-                        <td class="px-4 py-3">
-                            <a href="{{ route('admin.messages.show', $message->id) }}" class="inline-block rounded bg-green-600 px-3 py-1 text-xs font-semibold text-white hover:bg-green-700">Show</a>
+                        <td class="text-slate-500">{{ $message->created_at->format('M d, Y') }}</td>
+                        <td class="text-right">
+                            <a href="{{ route('admin.messages.show', $message->id) }}" class="admin-btn-success !px-3">Open</a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-10 text-center text-slate-500">No messages yet. Messages from the contact form will appear here.</td>
+                        <td colspan="6" class="py-12 text-center text-slate-500">No messages yet.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    <div class="border-t border-slate-200 px-4 py-3">{{ $messages->links() }}</div>
+    <div class="admin-card-footer">{{ $messages->links() }}</div>
 </div>
 @endsection
