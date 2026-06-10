@@ -21,6 +21,15 @@ class CartController extends Controller
         ]);
     }
 
+    public function quickAdd(Product $product): RedirectResponse
+    {
+        $this->cart->add($product, 1);
+
+        return redirect()
+            ->route('cart.index')
+            ->with('cart_success', "{$product->name} added to cart.");
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([

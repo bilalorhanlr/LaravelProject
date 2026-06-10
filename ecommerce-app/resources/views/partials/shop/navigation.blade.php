@@ -63,6 +63,10 @@
             <a href="{{ route('home') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Home</a>
             <a href="{{ route('shop') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Shop</a>
             <a href="{{ route('pages.contact') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Contact Us</a>
+            @auth
+                <a href="{{ route('user.profile') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">My Account</a>
+                <a href="{{ route('user.reviews') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">My Reviews</a>
+            @endif
             <a href="{{ route('sales') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Sales</a>
             <a href="{{ route('pages.faq') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">FAQ</a>
             <a href="{{ route('cart.index') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Cart ({{ $cartCount }})</a>

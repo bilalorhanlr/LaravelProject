@@ -7,6 +7,7 @@ use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Shop\PageController;
 use App\Http\Controllers\Shop\ProductController;
 use App\Http\Controllers\Shop\ReviewController;
+use App\Http\Controllers\Shop\UserPanelController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -19,6 +20,7 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('categorie
 Route::get('/category/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('/cart/add/{product:slug}', [CartController::class, 'quickAdd'])->name('cart.quick-add');
 Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::patch('/cart/{key}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/{key}', [CartController::class, 'destroy'])->name('cart.destroy');
@@ -41,4 +43,14 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::redirect('/dashboard', '/')->name('dashboard');
+
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::redirect('/panel', '/user/profile')->name('panel');
+        Route::get('/profile', [UserPanelController::class, 'profile'])->name('profile');
+        Route::put('/profile', [UserPanelController::class, 'updateProfile'])->name('profile.update');
+        Route::put('/change-password', [UserPanelController::class, 'updatePassword'])->name('password.update');
+        Route::get('/reviews', [UserPanelController::class, 'reviews'])->name('reviews');
+        Route::delete('/reviews/{id}', [UserPanelController::class, 'destroyReview'])->name('reviews.destroy');
+        Route::get('/orders', [UserPanelController::class, 'orders'])->name('orders');
+    });
 });

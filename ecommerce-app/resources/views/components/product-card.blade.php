@@ -47,5 +47,9 @@
         <a href="{{ route('products.show', $product) }}" class="mt-2 text-sm font-medium text-shop-muted transition hover:text-shop-orange">
             {{ $product->name }}
         </a>
+        <a href="{{ route('cart.quick-add', $product) }}" class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-shop-orange hover:underline" @click.stop>
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add to Cart
+        </a>
     </div>
 </article>

@@ -20,7 +20,7 @@
         </div>
     @else
         <div class="mt-10 grid gap-8 lg:grid-cols-3">
-            <div class="lg:col-span-2 space-y-4">
+            <div class="space-y-4 lg:col-span-2">
                 @foreach ($items as $item)
                     <div class="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-card sm:flex-row sm:items-center">
                         <a href="{{ route('products.show', $item['slug']) }}" class="shrink-0 overflow-hidden rounded-xl">
@@ -30,14 +30,28 @@
                             <a href="{{ route('products.show', $item['slug']) }}" class="font-semibold text-shop-dark hover:text-shop-orange">{{ $item['name'] }}</a>
                             <p class="mt-1 text-sm text-shop-muted">Size: {{ $item['size'] }}</p>
                             <p class="text-sm font-bold text-shop-orange">${{ number_format($item['price'], 2) }}</p>
+                            <a href="{{ route('cart.quick-add', $item['slug']) }}" class="mt-2 inline-block text-xs font-semibold text-shop-orange hover:underline">+ Add one more</a>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <form action="{{ route('cart.update', $item['key']) }}" method="POST" class="flex items-center overflow-hidden rounded-xl border border-slate-200">
+                        <div class="flex items-center gap-3">
+                            {{-- Quantity decrease --}}
+                            <form action="{{ route('cart.update', $item['key']) }}" method="POST">
                                 @csrf
                                 @method('PATCH')
-                                <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" max="99" class="w-16 border-0 py-2 text-center text-sm focus:ring-0">
-                                <button type="submit" class="bg-shop-surface px-3 py-2 text-xs font-semibold text-shop-dark hover:bg-shop-orange hover:text-white">Update</button>
+                                <input type="hidden" name="quantity" value="{{ max(0, $item['quantity'] - 1) }}">
+                                <button type="submit" class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-lg font-bold text-shop-dark hover:border-shop-orange hover:text-shop-orange" title="Decrease">−</button>
                             </form>
+
+                            <span class="min-w-[2rem] text-center text-sm font-bold text-shop-dark">{{ $item['quantity'] }}</span>
+
+                            {{-- Quantity increase --}}
+                            <form action="{{ route('cart.update', $item['key']) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="quantity" value="{{ min(99, $item['quantity'] + 1) }}">
+                                <button type="submit" class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-lg font-bold text-shop-dark hover:border-shop-orange hover:text-shop-orange" title="Increase">+</button>
+                            </form>
+
+                            {{-- Remove --}}
                             <form action="{{ route('cart.destroy', $item['key']) }}" method="POST">
                                 @csrf
                                 @method('DELETE')

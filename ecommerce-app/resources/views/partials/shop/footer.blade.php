@@ -23,7 +23,7 @@
                 <ul class="mt-4 space-y-2.5 text-sm text-shop-muted">
                     <li>
                         @auth
-                            <span class="text-shop-dark">{{ Auth::user()->name }}</span>
+                            <a href="{{ route('user.profile') }}" class="hover:text-shop-orange">{{ Auth::user()->name }}</a>
                         @else
                             <a href="{{ route('login') }}" class="hover:text-shop-orange">My Account</a>
                         @endauth
