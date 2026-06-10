@@ -15,25 +15,9 @@
         <span class="font-medium text-shop-dark">{{ $product->name }}</span>
     </nav>
 
-    <div class="grid gap-10 lg:grid-cols-2" x-data="{ mainImage: '{{ $product->image }}', selectedSize: '{{ $product->sizes[0] ?? 'M' }}', selectedColor: '{{ $product->colors[0] ?? '#3B82F6' }}', qty: 1 }">
-        {{-- Image Gallery --}}
-        <div>
-            <div class="overflow-hidden rounded-3xl border border-slate-100 bg-shop-surface shadow-card">
-                <img :src="mainImage" src="{{ $product->image }}" alt="{{ $product->name }}" class="aspect-square w-full object-cover">
-            </div>
-            @if ($product->images->isNotEmpty())
-                <div class="mt-3 grid grid-cols-5 gap-2">
-                    <button type="button" @click="mainImage = '{{ $product->image }}'" class="overflow-hidden rounded-lg border-2 border-transparent hover:border-shop-orange focus:border-shop-orange">
-                        <img src="{{ $product->image }}" alt="" class="aspect-square w-full object-cover">
-                    </button>
-                    @foreach ($product->images as $galleryImage)
-                        <button type="button" @click="mainImage = '{{ $galleryImage->image }}'" class="overflow-hidden rounded-lg border-2 border-transparent hover:border-shop-orange focus:border-shop-orange">
-                            <img src="{{ $galleryImage->image }}" alt="" class="aspect-square w-full object-cover">
-                        </button>
-                    @endforeach
-                </div>
-            @endif
-        </div>
+    <div class="grid gap-10 lg:grid-cols-2" x-data="{ selectedSize: '{{ $product->sizes[0] ?? 'M' }}', selectedColor: '{{ $product->colors[0] ?? '#3B82F6' }}', qty: 1 }">
+        {{-- Product Image Gallery --}}
+        @include('partials.shop.product-gallery', ['product' => $product])
 
         {{-- Details --}}
         <div>
