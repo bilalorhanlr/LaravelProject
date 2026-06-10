@@ -75,6 +75,35 @@
 </div>
 
 <div class="mt-6 grid gap-6 lg:grid-cols-2">
+  {{-- Contact Messages --}}
+  <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+      <h3 class="font-semibold text-slate-800">Contact Messages</h3>
+      <a href="{{ route('admin.messages.index') }}" class="text-sm text-admin-primary hover:underline">View All</a>
+    </div>
+    <div class="p-4">
+      @if ($unreadMessages > 0)
+        <p class="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">{{ $unreadMessages }} unread message(s)</p>
+      @endif
+      <ul class="divide-y divide-slate-100">
+        @forelse ($recentMessages as $msg)
+          <li class="flex items-center justify-between py-3">
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-medium text-slate-800">{{ $msg->name }}</p>
+              <p class="truncate text-xs text-slate-500">{{ Str::limit($msg->message, 50) }}</p>
+            </div>
+            <div class="ml-3 flex shrink-0 items-center gap-2">
+              <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold {{ $msg->status === 'unread' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700' }}">{{ $msg->status }}</span>
+              <a href="{{ route('admin.messages.show', $msg->id) }}" class="text-xs text-admin-primary hover:underline">Show</a>
+            </div>
+          </li>
+        @empty
+          <li class="py-6 text-center text-sm text-slate-500">No messages yet.</li>
+        @endforelse
+      </ul>
+    </div>
+  </div>
+
   {{-- Products table --}}
   <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
     <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">

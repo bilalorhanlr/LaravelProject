@@ -34,6 +34,7 @@
                 <h4 class="text-sm font-bold uppercase tracking-widest text-shop-dark">Customer Service</h4>
                 <ul class="mt-4 space-y-2.5 text-sm text-shop-muted">
                     <li><a href="{{ route('pages.about') }}" class="hover:text-shop-orange">About Us</a></li>
+                    <li><a href="{{ route('pages.contact') }}" class="hover:text-shop-orange">Contact Us</a></li>
                     <li><a href="{{ route('pages.shipping') }}" class="hover:text-shop-orange">Shipping & Return</a></li>
                     <li><a href="{{ route('pages.shipping') }}" class="hover:text-shop-orange">Shipping Guide</a></li>
                     <li><a href="{{ route('pages.faq') }}" class="hover:text-shop-orange">FAQ</a></li>

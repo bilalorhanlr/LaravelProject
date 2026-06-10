@@ -1,16 +1,22 @@
+@php
+    $activeCategory = request()->route('category');
+    $isActive = fn ($cat) => $activeCategory && ($activeCategory->id === $cat->id || $activeCategory->parent_id === $cat->id);
+@endphp
+
 <aside
     @click.outside="if (window.innerWidth < 1024) categoriesOpen = false"
     class="w-full shrink-0 lg:w-64"
     :class="categoriesOpen ? 'block' : 'hidden lg:block'"
 >
     <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
+        <p class="border-b border-slate-100 bg-shop-surface/50 px-4 py-3 text-xs font-bold uppercase tracking-widest text-shop-dark">Categories</p>
         <ul class="divide-y divide-slate-50">
             @foreach ($navCategories as $category)
-                <li x-data="{ subOpen: false }" class="group">
+                <li x-data="{ subOpen: {{ $isActive($category) ? 'true' : 'false' }} }" class="group">
                     <div class="flex items-center justify-between">
                         <a
                             href="{{ route('categories.show', $category) }}"
-                            class="flex-1 px-4 py-3.5 text-sm font-medium text-shop-dark transition hover:bg-shop-surface hover:text-shop-orange"
+                            class="flex-1 px-4 py-3.5 text-sm font-medium transition {{ $activeCategory?->id === $category->id ? 'bg-shop-orange/10 text-shop-orange' : 'text-shop-dark hover:bg-shop-surface hover:text-shop-orange' }}"
                         >
                             {{ $category->name }}
                         </a>
@@ -24,7 +30,10 @@
                         <ul x-show="subOpen" x-cloak class="bg-shop-surface/50 pb-2">
                             @foreach ($category->children as $child)
                                 <li>
-                                    <a href="{{ route('categories.show', $child) }}" class="block py-2 pl-8 pr-4 text-xs text-shop-muted transition hover:text-shop-orange">
+                                    <a
+                                        href="{{ route('categories.show', $child) }}"
+                                        class="block py-2 pl-8 pr-4 text-xs transition {{ $activeCategory?->id === $child->id ? 'font-semibold text-shop-orange' : 'text-shop-muted hover:text-shop-orange' }}"
+                                    >
                                         {{ $child->name }}
                                     </a>
                                 </li>

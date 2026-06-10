@@ -51,6 +51,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::prefix('messages')->name('messages.')->group(function () {
         Route::get('/', [MessageController::class, 'index'])->name('index');
+        Route::get('/{id}', [MessageController::class, 'show'])->name('show');
+        Route::delete('/{id}', [MessageController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('users')->name('users.')->group(function () {
@@ -63,5 +65,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [SettingController::class, 'index'])->name('index');
+        Route::put('/', [SettingController::class, 'update'])->name('update');
     });
 });

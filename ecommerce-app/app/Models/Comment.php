@@ -12,9 +12,21 @@ class Comment extends Model
         'rate',
         'product_id',
         'user_id',
+        'name',
+        'email',
         'ip',
         'status',
     ];
+
+    public function reviewerName(): string
+    {
+        return $this->name ?? $this->user?->name ?? 'Guest';
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'active');
+    }
 
     public function product(): BelongsTo
     {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -26,7 +27,9 @@ class PageController extends Controller
 
     public function about(): View
     {
-        return view('shop.pages.about');
+        return view('shop.pages.about', [
+            'setting' => Setting::first(),
+        ]);
     }
 
     public function shipping(): View

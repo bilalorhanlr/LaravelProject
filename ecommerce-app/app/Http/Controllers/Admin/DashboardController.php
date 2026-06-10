@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Message;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\View\View;
@@ -22,6 +23,8 @@ class DashboardController extends Controller
                 'visitors' => 820,
             ],
             'topProducts' => Product::latest()->take(4)->get(),
+            'recentMessages' => Message::latest()->take(5)->get(),
+            'unreadMessages' => Message::where('status', 'unread')->count(),
         ]);
     }
 }

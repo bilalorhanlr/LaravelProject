@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CategoryController;
+use App\Http\Controllers\Shop\ContactController;
 use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Shop\PageController;
 use App\Http\Controllers\Shop\ProductController;
@@ -25,6 +26,8 @@ Route::get('/store', [PageController::class, 'store'])->name('pages.store');
 Route::get('/newsletter', [PageController::class, 'newsletter'])->name('pages.newsletter');
 Route::get('/faq', [PageController::class, 'faq'])->name('pages.faq');
 Route::get('/about', [PageController::class, 'about'])->name('pages.about');
+Route::get('/contact', [ContactController::class, 'index'])->name('pages.contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('pages.contact.store');
 Route::get('/shipping', [PageController::class, 'shipping'])->name('pages.shipping');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('pages.wishlist');
 Route::get('/compare', [PageController::class, 'compare'])->name('pages.compare');

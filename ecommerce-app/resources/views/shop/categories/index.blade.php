@@ -23,7 +23,7 @@
                 <ul class="divide-y divide-slate-50 p-4">
                     @foreach ($category->children->take(4) as $child)
                         <li>
-                            <span class="block py-2 text-sm text-shop-muted transition group-hover:text-shop-dark">{{ $child->name }}</span>
+                            <a href="{{ route('categories.show', $child) }}" class="block py-2 text-sm text-shop-muted transition hover:text-shop-orange" @click.stop>{{ $child->name }}</a>
                         </li>
                     @endforeach
                     @if ($category->children->count() > 4)
