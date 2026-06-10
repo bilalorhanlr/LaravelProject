@@ -21,7 +21,13 @@
             <div>
                 <h4 class="text-sm font-bold uppercase tracking-widest text-shop-dark">My Account</h4>
                 <ul class="mt-4 space-y-2.5 text-sm text-shop-muted">
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-shop-orange">My Account</a></li>
+                    <li>
+                        @auth
+                            <span class="text-shop-dark">{{ Auth::user()->name }}</span>
+                        @else
+                            <a href="{{ route('login') }}" class="hover:text-shop-orange">My Account</a>
+                        @endauth
+                    </li>
                     <li><a href="{{ route('pages.wishlist') }}" class="hover:text-shop-orange">My Wishlist</a></li>
                     <li><a href="{{ route('pages.compare') }}" class="hover:text-shop-orange">Compare</a></li>
                     <li><a href="{{ route('cart.index') }}" class="hover:text-shop-orange">Shopping Cart</a></li>

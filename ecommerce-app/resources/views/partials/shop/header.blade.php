@@ -27,7 +27,13 @@
             <div class="hidden text-right sm:block">
                 <p class="text-[10px] font-bold uppercase tracking-widest text-shop-muted">My Account</p>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-shop-dark hover:text-shop-orange">Dashboard</a>
+                    <div class="flex flex-col items-end gap-0.5">
+                        <span class="text-sm font-semibold text-shop-dark">{{ Auth::user()->name }}</span>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="text-xs font-semibold text-shop-orange hover:underline">Logout</button>
+                        </form>
+                    </div>
                 @else
                     <div class="text-sm font-semibold">
                         <a href="{{ route('login') }}" class="hover:text-shop-orange">Login</a>
