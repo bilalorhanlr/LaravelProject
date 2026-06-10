@@ -39,8 +39,8 @@
                         <span class="text-xl text-shop-orange line-through">{{ $product->formattedOriginalPrice() }}</span>
                     @endif
                 </div>
-                <x-star-rating :rating="$product->rating" size="lg" />
-                <a href="#" class="text-sm text-shop-muted hover:text-shop-orange">{{ $product->review_count }} Review(s) / Add Review</a>
+                <x-star-rating :rating="$product->rating" :count="$product->review_count" size="lg" />
+                <a href="#reviews" class="text-sm text-shop-muted hover:text-shop-orange">{{ $product->review_count }} Review(s) / Add Review</a>
             </div>
 
             <div class="mt-6 flex flex-wrap gap-6 text-sm">
@@ -50,9 +50,6 @@
 
             @if ($product->description)
                 <div class="prose prose-sm mt-6 max-w-none text-shop-muted">{!! $product->description !!}</div>
-            @endif
-            @if ($product->detail)
-                <div class="prose prose-sm mt-4 max-w-none text-shop-muted">{!! $product->detail !!}</div>
             @endif
 
             @if ($product->sizes)
@@ -120,6 +117,8 @@
             </form>
         </div>
     </div>
+
+    @include('partials.shop.product-reviews', ['product' => $product, 'reviews' => $reviews])
 
     @if ($relatedProducts->isNotEmpty())
         <section class="mt-16">

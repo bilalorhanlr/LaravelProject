@@ -1,19 +1,40 @@
-@extends('shop.pages._layout')
+@extends('layouts.shop')
 
 @section('title', 'FAQ')
 
-@section('page-title', 'Frequently Asked Questions')
+@section('content')
+<div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <nav class="mb-8 flex items-center gap-2 text-sm text-shop-muted">
+        <a href="{{ route('home') }}" class="hover:text-shop-orange">Home</a>
+        <span>/</span>
+        <span class="font-medium text-shop-orange">FAQ</span>
+    </nav>
 
-@section('page-content')
-    @foreach ([
-        ['q' => 'How long does shipping take?', 'a' => 'Standard shipping takes 3-5 business days. Express shipping is available at checkout.'],
-        ['q' => 'What is your return policy?', 'a' => 'We offer 30-day hassle-free returns on all unused items in original packaging.'],
-        ['q' => 'Do you ship internationally?', 'a' => 'Yes, we ship to over 50 countries worldwide.'],
-        ['q' => 'How can I track my order?', 'a' => 'Once shipped, you will receive a tracking number via email.'],
-    ] as $item)
-        <details class="mb-4 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-            <summary class="cursor-pointer font-semibold text-shop-dark">{{ $item['q'] }}</summary>
-            <p class="mt-3 text-sm text-shop-muted">{{ $item['a'] }}</p>
-        </details>
-    @endforeach
+    <h1 class="shop-section-title">Frequently Asked Questions</h1>
+    <p class="mt-2 text-shop-muted">Find answers to common questions about shopping, shipping, and returns.</p>
+
+    <div class="mt-10 space-y-3" x-data="{ open: null }">
+        @forelse ($faqs as $index => $faq)
+            <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+                <button
+                    type="button"
+                    @click="open = open === {{ $index }} ? null : {{ $index }}"
+                    class="flex w-full items-center justify-between px-5 py-4 text-left font-semibold text-shop-dark transition hover:bg-shop-surface/50"
+                >
+                    <span>{{ $faq->question }}</span>
+                    <svg class="h-5 w-5 shrink-0 text-shop-orange transition" :class="open === {{ $index }} && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div x-show="open === {{ $index }}" x-cloak class="border-t border-slate-100 px-5 py-4">
+                    <p class="text-sm leading-relaxed text-shop-muted">{{ $faq->answer }}</p>
+                </div>
+            </div>
+        @empty
+            <div class="rounded-2xl border border-dashed border-slate-200 py-12 text-center text-shop-muted">
+                No FAQ entries yet.
+            </div>
+        @endforelse
+    </div>
+</div>
 @endsection

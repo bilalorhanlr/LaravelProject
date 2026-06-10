@@ -97,4 +97,27 @@ class Product extends Model
     {
         return $query->where('status', 'active');
     }
+
+    public function publishedComments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->where('status', 'active')->latest();
+    }
+
+    public function syncReviewStats(): void
+    {
+        $stats = $this->comments()->published();
+
+        $count = (clone $stats)->count();
+        $average = $count > 0 ? round((clone $stats)->avg('rate'), 1) : 0;
+
+        $this->update([
+            'review_count' => $count,
+            'rating' => $average,
+        ]);
+    }
+
+    public function formattedRating(): string
+    {
+        return number_format((float) $this->rating, 1);
+    }
 }

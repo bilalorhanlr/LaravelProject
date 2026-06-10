@@ -39,6 +39,7 @@
             @endforeach
 
             <a href="{{ route('sales') }}" class="px-4 py-4 text-sm font-semibold uppercase tracking-wide transition hover:bg-white/10 {{ request()->routeIs('sales') ? 'text-shop-orange' : '' }}">Sales</a>
+            <a href="{{ route('pages.faq') }}" class="px-4 py-4 text-sm font-semibold uppercase tracking-wide transition hover:bg-white/10 {{ request()->routeIs('pages.faq') ? 'text-shop-orange' : '' }}">FAQ</a>
 
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" class="flex items-center gap-1 px-4 py-4 text-sm font-semibold uppercase tracking-wide transition hover:bg-white/10" type="button">
@@ -63,6 +64,7 @@
             <a href="{{ route('shop') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Shop</a>
             <a href="{{ route('pages.contact') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Contact Us</a>
             <a href="{{ route('sales') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Sales</a>
+            <a href="{{ route('pages.faq') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">FAQ</a>
             <a href="{{ route('cart.index') }}" class="block rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10">Cart ({{ $cartCount }})</a>
             @foreach ($navCategories as $category)
                 <div x-data="{ subOpen: false }">

@@ -27,7 +27,7 @@
                     <tr class="hover:bg-slate-50">
                         <td class="px-4 py-3 text-slate-500">{{ $comment->id }}</td>
                         <td class="px-4 py-3 font-medium text-slate-800">{{ $comment->product?->title ?? '—' }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ $comment->user?->name ?? 'Guest' }}</td>
+                        <td class="px-4 py-3 text-slate-600">{{ $comment->reviewerName() }}</td>
                         <td class="max-w-xs truncate px-4 py-3 text-slate-600">{{ $comment->comment }}</td>
                         <td class="px-4 py-3">{{ $comment->rate }}/5</td>
                         <td class="px-4 py-3">

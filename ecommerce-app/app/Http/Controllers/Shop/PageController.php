@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
+use App\Models\Faq;
 use App\Models\Setting;
 use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
@@ -22,7 +23,9 @@ class PageController extends Controller
 
     public function faq(): View
     {
-        return view('shop.pages.faq');
+        return view('shop.pages.faq', [
+            'faqs' => Faq::where('status', 'active')->latest()->get(),
+        ]);
     }
 
     public function about(): View

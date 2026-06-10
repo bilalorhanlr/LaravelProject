@@ -10,18 +10,36 @@ class FaqSeeder extends Seeder
     public function run(): void
     {
         $faqs = [
-            ['How long does shipping take?', 'Standard shipping takes 3-5 business days. Express shipping is available at checkout for 1-2 day delivery.'],
-            ['What is your return policy?', 'We offer 30-day hassle-free returns on all unused items in original packaging. Contact support to initiate a return.'],
-            ['Do you ship internationally?', 'Yes, we ship to over 50 countries worldwide. International delivery times vary by destination.'],
-            ['How can I track my order?', 'Once shipped, you will receive a tracking number via email. You can also view order status in your account.'],
-            ['What payment methods do you accept?', 'We accept Visa, Mastercard, PayPal, and bank transfer for selected regions.'],
-            ['How do I contact customer support?', 'Use our Contact Us page or email support@e-shop.com. We respond within 24 business hours.'],
+            [
+                'question' => 'How long does shipping take?',
+                'answer' => 'Standard shipping takes 3-5 business days. Express shipping is available at checkout for 1-2 business day delivery.',
+            ],
+            [
+                'question' => 'What is your return policy?',
+                'answer' => 'We offer 30-day hassle-free returns on all unused items in original packaging. Contact our support team to initiate a return.',
+            ],
+            [
+                'question' => 'Do you ship internationally?',
+                'answer' => 'Yes, we ship to over 50 countries worldwide. International shipping times vary by destination.',
+            ],
+            [
+                'question' => 'How can I track my order?',
+                'answer' => 'Once your order ships, you will receive a tracking number via email. You can also view order status in your account dashboard.',
+            ],
+            [
+                'question' => 'What payment methods do you accept?',
+                'answer' => 'We accept major credit cards, debit cards, PayPal, and bank transfers depending on your region.',
+            ],
+            [
+                'question' => 'How do product reviews work?',
+                'answer' => 'Anyone can leave a star rating and review on product pages. Reviews are published immediately and help other shoppers make informed decisions.',
+            ],
         ];
 
-        foreach ($faqs as [$question, $answer]) {
+        foreach ($faqs as $faq) {
             Faq::firstOrCreate(
-                ['question' => $question],
-                ['answer' => $answer, 'status' => 'active']
+                ['question' => $faq['question']],
+                ['answer' => $faq['answer'], 'status' => 'active']
             );
         }
     }

@@ -42,7 +42,7 @@
                     <span class="text-sm text-shop-orange line-through">{{ $product->formattedOriginalPrice() }}</span>
                 @endif
             </div>
-            <x-star-rating :rating="$product->rating" />
+            <x-star-rating :rating="$product->rating" :count="$product->review_count" />
         </div>
         <a href="{{ route('products.show', $product) }}" class="mt-2 text-sm font-medium text-shop-muted transition hover:text-shop-orange">
             {{ $product->name }}

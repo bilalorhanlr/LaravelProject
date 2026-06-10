@@ -46,10 +46,11 @@ class ProductController extends Controller
 
     public function show(Product $product): View
     {
-        $product->load(['category.parent', 'images']);
+        $product->load(['category.parent', 'images', 'publishedComments']);
 
         return view('shop.products.show', [
             'product' => $product,
+            'reviews' => $product->publishedComments,
             'relatedProducts' => Product::active()
                 ->where('category_id', $product->category_id)
                 ->where('id', '!=', $product->id)
