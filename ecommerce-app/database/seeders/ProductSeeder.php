@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -17,7 +18,11 @@ class ProductSeeder extends Seeder
                 'name' => 'Urban Runner Sneakers',
                 'price' => 32.50,
                 'original_price' => 45.00,
-                'image' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop',
+                'image' => '/images/products/urban-runner-sneakers-main.jpg',
+                'gallery' => [
+                    '/images/products/urban-runner-sneakers-2.jpg',
+                    '/images/products/urban-runner-sneakers-3.jpg',
+                ],
                 'rating' => 4.0,
                 'review_count' => 3,
                 'is_new' => true,
@@ -33,7 +38,8 @@ class ProductSeeder extends Seeder
                 'name' => 'Leather Crossbody Bag',
                 'price' => 58.00,
                 'original_price' => 72.00,
-                'image' => 'https://images.unsplash.com/photo-1548036328-c9fa89d6e08d?w=600&h=600&fit=crop',
+                'image' => '/images/products/leather-crossbody-bag-main.jpg',
+                'gallery' => ['/images/products/leather-crossbody-bag-2.jpg'],
                 'rating' => 4.5,
                 'review_count' => 12,
                 'is_new' => true,
@@ -48,7 +54,8 @@ class ProductSeeder extends Seeder
                 'name' => 'Minimalist Steel Watch',
                 'price' => 89.99,
                 'original_price' => 120.00,
-                'image' => 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=600&fit=crop',
+                'image' => '/images/products/minimalist-steel-watch-main.jpg',
+                'gallery' => ['/images/products/minimalist-steel-watch-2.jpg'],
                 'rating' => 5.0,
                 'review_count' => 8,
                 'is_new' => false,
@@ -63,7 +70,8 @@ class ProductSeeder extends Seeder
                 'name' => 'Classic Leather Wallet',
                 'price' => 24.50,
                 'original_price' => null,
-                'image' => 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&h=600&fit=crop',
+                'image' => '/images/products/classic-leather-wallet-main.jpg',
+                'gallery' => [],
                 'rating' => 4.0,
                 'review_count' => 5,
                 'is_new' => true,
@@ -78,7 +86,8 @@ class ProductSeeder extends Seeder
                 'name' => 'Silk Evening Dress',
                 'price' => 64.00,
                 'original_price' => 80.00,
-                'image' => 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&h=600&fit=crop',
+                'image' => '/images/products/silk-evening-dress-main.jpg',
+                'gallery' => ['/images/products/silk-evening-dress-2.jpg'],
                 'rating' => 4.5,
                 'review_count' => 18,
                 'is_new' => false,
@@ -93,7 +102,8 @@ class ProductSeeder extends Seeder
                 'name' => 'Premium Cotton Shirt',
                 'price' => 39.99,
                 'original_price' => 49.99,
-                'image' => 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=600&fit=crop',
+                'image' => '/images/products/premium-cotton-shirt-main.jpg',
+                'gallery' => ['/images/products/premium-cotton-shirt-2.jpg'],
                 'rating' => 4.0,
                 'review_count' => 22,
                 'is_new' => true,
@@ -108,7 +118,8 @@ class ProductSeeder extends Seeder
                 'name' => 'Wireless Noise-Cancel Headphones',
                 'price' => 129.00,
                 'original_price' => 179.00,
-                'image' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop',
+                'image' => '/images/products/wireless-headphones-main.jpg',
+                'gallery' => ['/images/products/wireless-headphones-2.jpg'],
                 'rating' => 4.8,
                 'review_count' => 45,
                 'is_new' => true,
@@ -124,7 +135,8 @@ class ProductSeeder extends Seeder
                 'name' => 'MagSafe Phone Case',
                 'price' => 19.99,
                 'original_price' => 29.99,
-                'image' => 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=600&h=600&fit=crop',
+                'image' => '/images/products/magsafe-phone-case-main.jpg',
+                'gallery' => ['/images/products/magsafe-phone-case-2.jpg'],
                 'rating' => 4.2,
                 'review_count' => 31,
                 'is_new' => false,
@@ -142,7 +154,7 @@ class ProductSeeder extends Seeder
                 continue;
             }
 
-            Product::create([
+            $product = Product::create([
                 'category_id' => $category->id,
                 'title' => $data['name'],
                 'slug' => Str::slug($data['name']),
@@ -165,6 +177,14 @@ class ProductSeeder extends Seeder
                 'is_deal' => $data['is_deal'] ?? false,
                 'status' => 'active',
             ]);
+
+            foreach ($data['gallery'] ?? [] as $index => $galleryPath) {
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'title' => 'Gallery '.($index + 1),
+                    'image' => $galleryPath,
+                ]);
+            }
         }
     }
 }
