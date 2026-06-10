@@ -22,16 +22,21 @@ class CategorySeeder extends Seeder
 
         foreach ($categories as $index => [$name, $children]) {
             $parent = Category::create([
-                'name' => $name,
+                'title' => $name,
                 'slug' => Str::slug($name),
+                'keywords' => Str::slug($name, ','),
+                'description' => $name.' category',
+                'status' => 'active',
                 'sort_order' => $index + 1,
             ]);
 
             foreach ($children as $childIndex => $childName) {
                 Category::create([
                     'parent_id' => $parent->id,
-                    'name' => $childName,
+                    'title' => $childName,
                     'slug' => Str::slug($childName.'-'.$parent->slug),
+                    'keywords' => Str::slug($childName, ','),
+                    'status' => 'active',
                     'sort_order' => $childIndex + 1,
                 ]);
             }

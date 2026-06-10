@@ -144,12 +144,15 @@ class ProductSeeder extends Seeder
 
             Product::create([
                 'category_id' => $category->id,
-                'name' => $data['name'],
+                'title' => $data['name'],
                 'slug' => Str::slug($data['name']),
-                'description' => 'Premium quality product crafted for everyday comfort and style. Designed with attention to detail, durable materials, and a modern aesthetic that fits seamlessly into your wardrobe or lifestyle.',
+                'keywords' => Str::slug($data['name'], ','),
+                'description' => 'Premium quality product crafted for everyday comfort and style.',
+                'detail' => 'Designed with attention to detail, durable materials, and a modern aesthetic that fits seamlessly into your wardrobe or lifestyle.',
                 'price' => $data['price'],
                 'original_price' => $data['original_price'],
                 'image' => $data['image'],
+                'quantity' => $data['stock'],
                 'rating' => $data['rating'],
                 'review_count' => $data['review_count'],
                 'is_new' => $data['is_new'],
@@ -160,6 +163,7 @@ class ProductSeeder extends Seeder
                 'colors' => $data['colors'],
                 'is_featured' => $data['is_featured'] ?? false,
                 'is_deal' => $data['is_deal'] ?? false,
+                'status' => 'active',
             ]);
         }
     }
