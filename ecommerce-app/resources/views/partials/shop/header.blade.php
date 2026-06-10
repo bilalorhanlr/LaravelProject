@@ -63,7 +63,7 @@
                             <svg class="h-4 w-4 text-shop-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                             Compare
                         </a>
-                        <a href="{{ route('pages.checkout') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-shop-dark hover:bg-shop-surface hover:text-shop-orange">
+                        <a href="{{ route('checkout.show') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-shop-dark hover:bg-shop-surface hover:text-shop-orange">
                             <svg class="h-4 w-4 text-shop-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             Checkout
                         </a>

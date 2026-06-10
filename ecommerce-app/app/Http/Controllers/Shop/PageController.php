@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Shop;
 use App\Http\Controllers\Controller;
 use App\Models\Faq;
 use App\Models\Setting;
-use App\Services\CartService;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -48,17 +46,5 @@ class PageController extends Controller
     public function compare(): View
     {
         return view('shop.pages.compare');
-    }
-
-    public function checkout(CartService $cart): View|RedirectResponse
-    {
-        if ($cart->isEmpty()) {
-            return redirect()->route('cart.index')->with('cart_success', 'Add items to your cart before checkout.');
-        }
-
-        return view('shop.pages.checkout', [
-            'items' => $cart->items(),
-            'subtotal' => $cart->subtotal(),
-        ]);
     }
 }

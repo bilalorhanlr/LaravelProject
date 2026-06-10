@@ -13,6 +13,8 @@ class OrderProduct extends Model
         'order_id',
         'price',
         'amount',
+        'size',
+        'color',
         'total',
         'ip',
         'note',

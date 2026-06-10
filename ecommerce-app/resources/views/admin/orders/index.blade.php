@@ -5,9 +5,28 @@
 @section('content')
 @include('admin.partials.page-header', ['title' => 'Orders', 'breadcrumb' => 'Orders'])
 
+@if (session('success'))
+    <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{{ session('success') }}</div>
+@endif
+
+@if ($errors->any())
+    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
+<div class="mb-4 flex flex-wrap gap-2">
+    <a href="{{ route('admin.orders.index') }}" class="rounded-full px-3 py-1 text-xs font-semibold {{ !request('status') ? 'bg-admin-primary text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">All</a>
+    <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="rounded-full px-3 py-1 text-xs font-semibold {{ request('status') === 'pending' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Pending</a>
+    <a href="{{ route('admin.orders.index', ['status' => 'approved']) }}" class="rounded-full px-3 py-1 text-xs font-semibold {{ request('status') === 'approved' ? 'bg-green-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Approved</a>
+    <a href="{{ route('admin.orders.index', ['status' => 'rejected']) }}" class="rounded-full px-3 py-1 text-xs font-semibold {{ request('status') === 'rejected' ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Rejected</a>
+</div>
+
 <div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
     <div class="border-b border-slate-200 px-4 py-3">
-        <h3 class="text-base font-semibold text-slate-800">Recent Orders</h3>
+        <h3 class="text-base font-semibold text-slate-800">Manage Orders</h3>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -22,34 +41,44 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-                @foreach ($orders as $order)
+                @forelse ($orders as $order)
                     <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-3 font-medium text-admin-primary">{{ $order['id'] }}</td>
-                        <td class="px-4 py-3">{{ $order['customer'] }}</td>
-                        <td class="px-4 py-3 text-slate-500">{{ $order['date'] }}</td>
-                        <td class="px-4 py-3 font-semibold">${{ number_format($order['total'], 2) }}</td>
+                        <td class="px-4 py-3 font-medium text-admin-primary">#{{ $order->id }}</td>
                         <td class="px-4 py-3">
-                            @php
-                                $colors = [
-                                    'Completed' => 'bg-green-100 text-green-700',
-                                    'Processing' => 'bg-blue-100 text-blue-700',
-                                    'Shipped' => 'bg-indigo-100 text-indigo-700',
-                                    'Pending' => 'bg-yellow-100 text-yellow-700',
-                                    'Cancelled' => 'bg-red-100 text-red-700',
-                                ];
-                            @endphp
-                            <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $colors[$order['status']] ?? 'bg-slate-100' }}">
-                                {{ $order['status'] }}
-                            </span>
+                            <div>{{ $order->customerName() }}</div>
+                            <div class="text-xs text-slate-500">{{ $order->email }}</div>
+                        </td>
+                        <td class="px-4 py-3 text-slate-500">{{ $order->created_at->format('M d, Y H:i') }}</td>
+                        <td class="px-4 py-3 font-semibold">${{ number_format($order->total, 2) }}</td>
+                        <td class="px-4 py-3">
+                            <x-order-status-badge :order="$order" />
                         </td>
                         <td class="px-4 py-3">
-                            <button type="button" class="rounded bg-admin-primary px-2 py-1 text-xs text-white">View</button>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="{{ route('admin.orders.show', $order->id) }}" class="rounded bg-admin-primary px-2 py-1 text-xs text-white hover:bg-admin-primary-dark">View</a>
+                                @if ($order->status === \App\Models\Order::STATUS_PENDING)
+                                    <form action="{{ route('admin.orders.accept', $order->id) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="rounded bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-700" onclick="return confirm('Approve this order?')">Accept</button>
+                                    </form>
+                                    <form action="{{ route('admin.orders.reject', $order->id) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700" onclick="return confirm('Reject this order? Stock will be restored.')">Cancel</button>
+                                    </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="6" class="px-4 py-12 text-center text-slate-500">No orders found.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
-    <div class="border-t border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-500">Footer</div>
+    <div class="border-t border-slate-200 px-4 py-3">{{ $orders->links() }}</div>
 </div>
 @endsection

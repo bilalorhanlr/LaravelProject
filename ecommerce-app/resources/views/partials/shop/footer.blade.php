@@ -31,7 +31,7 @@
                     <li><a href="{{ route('pages.wishlist') }}" class="hover:text-shop-orange">My Wishlist</a></li>
                     <li><a href="{{ route('pages.compare') }}" class="hover:text-shop-orange">Compare</a></li>
                     <li><a href="{{ route('cart.index') }}" class="hover:text-shop-orange">Shopping Cart</a></li>
-                    <li><a href="{{ route('pages.checkout') }}" class="hover:text-shop-orange">Checkout</a></li>
+                    <li><a href="{{ route('checkout.show') }}" class="hover:text-shop-orange">Checkout</a></li>
                     <li><a href="{{ route('login') }}" class="hover:text-shop-orange">Login</a></li>
                 </ul>
             </div>

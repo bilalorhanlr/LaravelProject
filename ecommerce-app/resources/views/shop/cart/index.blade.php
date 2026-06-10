@@ -87,7 +87,7 @@
                 @if ($subtotal < 50)
                     <p class="mt-3 text-xs text-shop-muted">Add ${{ number_format(50 - $subtotal, 2) }} more for free shipping!</p>
                 @endif
-                <a href="{{ route('pages.checkout') }}" class="shop-btn mt-6 w-full">Proceed to Checkout</a>
+                <a href="{{ route('checkout.show') }}" class="shop-btn mt-6 w-full">Proceed to Checkout</a>
             </div>
         </div>
     @endif

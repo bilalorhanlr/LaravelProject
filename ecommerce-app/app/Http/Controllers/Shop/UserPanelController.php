@@ -93,4 +93,15 @@ class UserPanelController extends Controller
 
         return view('shop.user.orders', compact('orders'));
     }
+
+    public function orderShow(Order $order): View
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $order->load('orderProducts.product');
+
+        return view('shop.user.order-show', compact('order'));
+    }
 }

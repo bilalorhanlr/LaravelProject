@@ -40,6 +40,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::get('/{id}', [OrderController::class, 'show'])->name('show');
+        Route::patch('/{id}/accept', [OrderController::class, 'accept'])->name('accept');
+        Route::patch('/{id}/reject', [OrderController::class, 'reject'])->name('reject');
     });
 
     Route::prefix('comments')->name('comments.')->group(function () {

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CategoryController;
+use App\Http\Controllers\Shop\CheckoutController;
 use App\Http\Controllers\Shop\ContactController;
 use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Shop\PageController;
@@ -35,14 +36,16 @@ Route::post('/contact', [ContactController::class, 'store'])->name('pages.contac
 Route::get('/shipping', [PageController::class, 'shipping'])->name('pages.shipping');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('pages.wishlist');
 Route::get('/compare', [PageController::class, 'compare'])->name('pages.compare');
-Route::get('/checkout', [PageController::class, 'checkout'])->name('pages.checkout');
-
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
     Route::redirect('/dashboard', '/')->name('dashboard');
+
+    Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/complete/{order}', [CheckoutController::class, 'complete'])->name('checkout.complete');
 
     Route::prefix('user')->name('user.')->group(function () {
         Route::redirect('/panel', '/user/profile')->name('panel');
@@ -52,5 +55,6 @@ Route::middleware([
         Route::get('/reviews', [UserPanelController::class, 'reviews'])->name('reviews');
         Route::delete('/reviews/{id}', [UserPanelController::class, 'destroyReview'])->name('reviews.destroy');
         Route::get('/orders', [UserPanelController::class, 'orders'])->name('orders');
+        Route::get('/orders/{order}', [UserPanelController::class, 'orderShow'])->name('orders.show');
     });
 });

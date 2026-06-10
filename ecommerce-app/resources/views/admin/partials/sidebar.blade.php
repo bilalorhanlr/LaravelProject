@@ -38,8 +38,9 @@
                 </button>
                 <ul x-show="open && sidebarOpen" x-cloak class="ml-9 mt-1 space-y-1 border-l border-white/10 pl-3">
                     <li><a href="{{ route('admin.orders.index') }}" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">All Orders</a></li>
-                    <li><a href="{{ route('admin.orders.index') }}?status=pending" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">Pending</a></li>
-                    <li><a href="{{ route('admin.orders.index') }}?status=completed" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">Completed</a></li>
+                    <li><a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">Pending</a></li>
+                    <li><a href="{{ route('admin.orders.index', ['status' => 'approved']) }}" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">Approved</a></li>
+                    <li><a href="{{ route('admin.orders.index', ['status' => 'rejected']) }}" class="block rounded py-1.5 text-xs text-slate-400 hover:text-white">Rejected</a></li>
                 </ul>
             </li>
 
